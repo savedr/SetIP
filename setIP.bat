@@ -2,11 +2,9 @@
 
 ::Check for command line options! If there is one, just set it as IP.
 
-if %1 equ "" goto choice
-:: Why is the tilde there? I'm taking it out.
-
+if "%~1" equ "" goto choice
 echo Ok! Setting that IP.
-set %ipaddy equ %1
+set ipaddy=%~1
 goto setIP
 
 ::Ok, give user the menu since there's no cl arguments.
@@ -29,38 +27,39 @@ if %errorlevel% equ 4 goto customstatic
 
 :dhcp
 echo Ok! DHCP it is.
-set %dhcp = 1
+set dhcp=1
 echo Give me a sec for it to take..
 goto setIP
 
 
 :oce
 echo Ok! Oce "laptop" scheme it is then.
-set %ipaddy = "134.188.254.101 255.255.255.0 134.188.254.1"
+set ipaddy="134.188.254.101 255.255.255.0 134.188.254.1"
 goto setIP
 
 
 :canon
 echo Ok! Canon fixed IP mode it is, then.
-set %ipaddy = "172.16.1.150 255.255.255.0 172.16.1.1"
+set ipaddy="172.16.1.150 255.255.255.0 172.16.1.1"
 goto setIP
 
 :customstatic
 echo Ok! Setting a custom static IP.
 echo.
 echo Give me an IP address.
-set /P %ipaddy =
+set /P ipaddy=
 goto setIP
 
 
 :setIP
 ::If they said DHCP, do that, otherwise set a static.
-if %dhcp = 1 then 
+if dhcp equ 1 (
   netsh interface ip set address name="Ethernet" dhcp
   goto end
-else
-  netsh interface ipv4 set address name="Ethernet" static %ipaddy
+) else (
+  netsh interface ipv4 set address name="Ethernet" static "%ipaddy%"
   goto end
+)
 
 
 :end
@@ -72,8 +71,12 @@ echo Here you go!
 echo.
 
 :: If we invoked from command line, do a goto eof, otherwise exit instead.
-if %1 = "" 
+if not "%~1" equ "" (
   goto:eof 
-else 
+) else (
+  echo Press any key to exit.
+  echo.
+  echo.
   pause
   exit
+)
