@@ -54,7 +54,7 @@ goto setIP
 :setIP
 ::If they said DHCP, do that, otherwise set a static.
 if dhcp equ 1 (
-  netsh interface ip set address name="Ethernet" dhcp
+  netsh interface ipv4 set address name="Ethernet" dhcp
   goto end
 ) else (
   netsh interface ipv4 set address name="Ethernet" static "%ipaddy%"
