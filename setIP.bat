@@ -1,15 +1,13 @@
 @echo off
 
-::Check for passed text! If there is one, just set it as IP.
+::Check for command line options! If there is one, just set it as IP.
 
 if "%~1" equ "" goto choice
 echo Ok! Setting that IP.
-netsh interface ipv4 set address name="Ethernet" static %~1
-timeout /t 7
-ipconfig
-echo.
-echo Here you go!
-goto:eof
+set ipaddy=%~1
+goto setIP
+
+::Ok, give user the menu since there's no cl arguments.
 
 :choice
 echo Hi! What do you want me to set on Ethernet?
@@ -29,51 +27,56 @@ if %errorlevel% equ 4 goto customstatic
 
 :dhcp
 echo Ok! DHCP it is.
-
-netsh interface ipv4 set address name="Ethernet" dhcp
-
+set dhcp=1
 echo Give me a sec for it to take..
-timeout /t 10
-ipconfig
-echo.
-echo Here you go! Press any key to exit.
-pause
-exit
+goto setIP
+
 
 :oce
 echo Ok! Oce "laptop" scheme it is then.
+set ipaddy="134.188.254.101 255.255.255.0 134.188.254.1"
+goto setIP
 
-netsh interface ipv4 set address name="Ethernet" static 134.188.254.101 255.255.255.0 134.188.254.1
-
-timeout /t 7
-ipconfig
-echo.
-echo Here you go! Press any key to exit.
-pause
-exit
 
 :canon
 echo Ok! Canon fixed IP mode it is, then.
-
-netsh interface ipv4 set address name="Ethernet" static 172.16.1.150 255.255.255.0 172.16.1.1
-
-timeout /t 7
-ipconfig
-echo.
-echo Here you go! Press any key to exit.
-pause
-exit
+set ipaddy="172.16.1.150 255.255.255.0 172.16.1.1"
+goto setIP
 
 :customstatic
 echo Ok! Setting a custom static IP.
 echo.
 echo Give me an IP address.
-set /P ip=
-netsh interface ipv4 set address name="Ethernet" static %ip%
+set /P ipaddy=
+goto setIP
 
+
+:setIP
+::If they said DHCP, do that, otherwise set a static.
+if dhcp equ 1 (
+  netsh interface ip set address name="Ethernet" dhcp
+  goto end
+) else (
+  netsh interface ipv4 set address name="Ethernet" static "%ipaddy%"
+  goto end
+)
+
+
+:end
+::First, stuff common to setting any IP.
 timeout /t 7
 ipconfig
 echo.
-echo Here you go! Press any key to exit.
-pause
-exit
+echo Here you go!
+echo.
+
+:: If we invoked from command line, do a goto eof, otherwise exit instead.
+if not "%~1" equ "" (
+  goto:eof 
+) else (
+  echo Press any key to exit.
+  echo.
+  echo.
+  pause
+  exit
+)
