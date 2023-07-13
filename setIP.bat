@@ -1,4 +1,3 @@
-@echo off
 
 ::Check for command line options! If there is one, just set it as IP.
 
@@ -10,7 +9,7 @@ goto setIP
 ::Ok, give user the menu since there's no cl arguments.
 
 :choice
-echo Hi! What do you want me to set on Ethernet?
+echo Hi! What IP scheme do you want me to set?
 echo. 
 echo [A] DHCP
 echo [B] Oce (actually Laptop, 134.188.254.101)
@@ -54,11 +53,11 @@ goto setIP
 :setIP
 ::If they said DHCP, do that, otherwise set a static.
 if dhcp equ 1 (
-  netsh interface ipv4 set address name="Ethernet" dhcp
-  goto end
+netsh interface ipv4 set address name="Ethernet" dhcp
+goto end
 ) else (
-  netsh interface ipv4 set address name="Ethernet" static "%ipaddy%"
-  goto end
+netsh interface ipv4 set address name="Ethernet" static "%ipaddy%"
+goto end
 )
 
 
@@ -72,11 +71,10 @@ echo.
 
 :: If we invoked from command line, do a goto eof, otherwise exit instead.
 if not "%~1" equ "" (
-  goto:eof 
+goto:eof 
 ) else (
-  echo Press any key to exit.
-  echo.
-  echo.
-  pause
-  exit
+echo Press any key to exit.
+echo.
+pause
+exit
 )
