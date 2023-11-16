@@ -23,8 +23,8 @@ there's a line with the text "netsh interface ipv4 set address name="Ethernet" d
 between those two quotation marks, erase Ethernet and type in the name Windows has for your Ethernet 
 adapter.
 
-Three more lines down is a line with somewhat similar text that reads "netsh interface ipv4 set address 
-name="Ethernet" static "%ipaddy%"". Same thing here, where it says "Ethernet", erase that and type in the 
+Four more lines down is a line with somewhat similar text that reads "netsh interface ipv4 set address 
+name="Ethernet".. etc. Same thing here, where it says "Ethernet", erase that and type in the 
 name of your Ethernet adapter between the quotes.
 
 3. Save the updated file. 
@@ -61,9 +61,7 @@ About setIP:
 This branch "modular" has basically the same functionality as SetIP-old, except instead of including the actual 
 function of setting the IP 5 times in the batchfile, it's only done twice (once because DHCP is a slightly 
 different string), and takes input in the form of variables. That way each choice (or the command line 
-arguments if used that way) can just 'call' that one 'function' (with gotos and labels, it's not real 
-modularity I know) and have it do its work. This should deduplicate code which should save problems later on, 
-even if using goto is bad.
+arguments if used that way) can just 'call' that one 'function' (with gotos and labels) and have it do its work. This should deduplicate code which should save problems later on, even if using goto is bad.
 
 I wonder if this will even make it easier to take more arguments than just IP via command line invocation?
 That will probably be another branch.
