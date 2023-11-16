@@ -1,9 +1,12 @@
+@echo off
 
 ::Check for command line options! If there is one, just set it as IP.
 
+set dhcp=0
+::Otherwise, :setIP's conditional will fail.
 if "%~1" equ "" goto choice
 echo Ok! Setting that IP.
-set ipaddy=%~1
+set ipaddy="%~1"
 goto setIP
 
 ::Ok, give user the menu since there's no cl arguments.
@@ -13,7 +16,7 @@ echo Hi! What IP scheme do you want me to set?
 echo. 
 echo [A] DHCP
 echo [B] Oce (actually Laptop, 134.188.254.101)
-echo [C] Canon's default static IP (172.16.1.50)
+echo [C] Canon's default fixed IP (172.16.1.50)
 echo [D] Set your own static IP
 echo. 
 
@@ -52,14 +55,14 @@ goto setIP
 
 :setIP
 ::If they said DHCP, do that, otherwise set a static.
-if dhcp equ 1 (
+if %dhcp% equ 1 (
 netsh interface ipv4 set address name="Ethernet" dhcp
 goto end
 ) else (
-netsh interface ipv4 set address name="Ethernet" static "%ipaddy%"
+::Look, we can strip out quotations with sort of a lambda, %var:"=% !
+netsh interface ipv4 set address name="Ethernet" static %ipaddy:"=%
 goto end
 )
-
 
 :end
 ::First, stuff common to setting any IP.
@@ -69,12 +72,13 @@ echo.
 echo Here you go!
 echo.
 
-:: If we invoked from command line, do a goto eof, otherwise exit instead.
+:: If we invoked from command line, goto eof, otherwise exit instead.
 if not "%~1" equ "" (
 goto:eof 
-) else (
+)
+:: Don't actually need an 'else' clause here; if user supplied a command line 
+:: parameter, we've exited to eof, and if not, always do the following anyway.
 echo Press any key to exit.
 echo.
 pause
 exit
-)
